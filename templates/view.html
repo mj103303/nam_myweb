@@ -4,7 +4,13 @@
 {{result.name}}<br>
 {{result.pubdate|formatdatetime}}<br>
 {{result.view}}<br>
-{{result.contents}}
+{{result.contents}}<br>
+{{result.writer_id}}
 
 <br>
 <a href="{{ url_for('lists', page=page, search=search, keyword=keyword)}}">리스트로</a>
+
+{% if session.id == result.writer_id %}
+    <a href="{{ url_for('board_delete', idx=result.id) }}">글삭제</a>
+    <a href="{{ url_for('board_edit', idx=result.id) }}">글수정</a>
+{% endif%}

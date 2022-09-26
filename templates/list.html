@@ -1,3 +1,10 @@
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <script>
+            alert("{{ messages[-1] }}");
+        </script>
+    {% endif %}
+{% endwith %}
 
 <script>
     function search(){
@@ -11,8 +18,6 @@
         }
     }
 </script>
-
-<p>페이지 : {{ page }}</p>
 
 
 <table>
