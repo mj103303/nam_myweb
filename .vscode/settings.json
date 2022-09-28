@@ -1,0 +1,7 @@
+{
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": false,
+    "python.linting.mypyEnabled": false,
+    "python.formatting.provider": "black",
+    "python.linting.pycodestyleEnabled": false
+}

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %} {{ title }} {% else %} 조조삼국통일 {% endif %}</title>
+
+</head>
+
+<body>
+    <!-- flash message -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <script>
+        alert("{{ messages[-1] }}")
+        // alert 창 띄울려고 이렇게 만드는겨, 점프는 alert 창이 아님
+    </script>
+    {% endif%}
+    {% endwith%}
+
+    <!-- menu -->
+    {% include "menu.html" %}
+
+    <!-- content -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- script -->
+    {% block script %}
+    {% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+
+{% extends "main.html" %}
+
+{% block content %}
+{{result.title}}<br>
+{{result.name}}<br>
+{{result.pubdate|formatdatetime}}<br>
+{{result.view}}<br>
+{{result.contents}}<br>
+{{result.writer_id}}
+
+<br>
+<a href="{{ url_for('board.lists', page=page, search=search, keyword=keyword)}}">리스트로</a>
+
+{% if session.id == result.writer_id %}
+    <a href="{{ url_for('board.board_delete', idx=result.id) }}">글삭제</a>
+    <a href="{{ url_for('board.board_edit', idx=result.id) }}">글수정</a>
+{% endif%}
+
+{% endblock %}

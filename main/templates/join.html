@@ -1,12 +1,7 @@
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <script>
-            alert("{{ messages[-1] }}")
-            // alert 창 띄울려고 이렇게 만드는겨, 점프는 alert 창이 아님
-        </script>
-    {% endif%}
-{% endwith%}
 
+{% extends "main.html" %}
+
+{% block content %}
 
 <table>
     <form name="form" action="/join" method="post">
@@ -36,3 +31,5 @@
         </tbody>
     </form>
 </table>
+
+{% endblock %}
