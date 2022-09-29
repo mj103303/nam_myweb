@@ -2,8 +2,41 @@
 
 {% block content %}
 
+<script>
+
+
+    function validateEmail(email){
+        var pattern = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.]([a-zA-Z]){2,3}$/i;
+        return pattern.test(email);
+    }
+
+    function checkForm(){   // true, false를 주는 함수
+        
+        if( $('#email').val().trim() == "" ){
+            alert("아이디를 입력하세요");
+            $("#email").focus();
+            return false;
+        }
+
+        if( false == validateEmail( $('#email').val().trim()) ){
+            alert("이메일 형식이 올바르지 않습니다")
+            $("#email").focus();
+            return false;
+        }
+
+        if( $("#pass").val().trim() == "") {
+            alert("비밀번호를 입력하세요");
+            $('#pass').focus();
+            return false;
+        }
+
+        return true;
+    }
+
+</script>
+
 <table>
-    <form action="{{ url_for('member.member_login') }}" name="form" method="post">
+    <form action="{{ url_for('member.member_login') }}" name="form" method="post" onsubmit="return checkForm()">
         {% if next_url %}
         <input type="hidden" value="{{ next_url }}" name="next_url">
         {% endif %}
@@ -13,11 +46,11 @@
         <tbody>
             <tr>
                 <td>이메일</td>
-                <td><input type="text" name="email"></td>
+                <td><input class="input-class" type="text" name="email" id="email"></td>
             </tr>
             <tr>
                 <td>비밀번호</td>
-                <td><input type="password" name="pass"></td>
+                <td><input class="input-class" type="password" name="pass" id="pass"></td>
             </tr>
             <tr>
                 <td colspan="2"><input type="submit" value="로그인"></td>

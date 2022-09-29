@@ -1,19 +1,40 @@
 
 {% extends "main.html" %}
 {% block content%}
+<script>
+    function checkForm(){   // true, false를 주는 함수
+        
+        if( $('#title').val().trim() == "" ){
+            alert("제목을 입력하세요");
+            $("#title").focus();
+            return false;
+        }
+
+
+        if( $("#contents").val().trim() == "") {
+            alert("내용을 입력하세요");
+            $('#contents').focus();
+            return false;
+        }
+
+        return true;
+    }
+</script>
+
+
 <table>
-    <form action="{{ url_for('board.board_write')}}" method="post">
+    <form action="{{ url_for('board.board_write')}}" method="post" onsubmit="return checkForm()">
     <tr>
         <td>작성자</td>
         <td><input type="text" name="name" value="{{session.name}}" readonly></td>
     </tr>
     <tr>
         <td>제목</td>
-        <td><input type="text" name="title"></td>
+        <td><input type="text" name="title" id="title"></td>
     </tr>
     <tr>
         <td>내용</td>
-        <td><textarea name="contents"></textarea></td>
+        <td><textarea name="contents" id="contents"></textarea></td>
     </tr>
     <tr>
         <td colspan="2"><input type="submit"></td>

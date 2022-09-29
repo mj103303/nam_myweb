@@ -3,27 +3,77 @@
 
 {% block content %}
 
+    <script>
+        function checkForm(){
+
+            // name
+            if ( $('#name').val().trim() == '' ){
+                alert('이름을 입력하세요');
+                $('#name').focus();
+                return false;
+            }
+
+            // email
+            if ( $('#email').val().trim() == '' ){
+                alert('이메일을 입력하시오');
+                $('#email').focus();
+                return false;
+            }
+
+            // validate email
+            if ( validateEmail( $('#email').val().trim()) == false ){
+                alert('이메일 형식이 올바르지 않습니다');
+                $('#email').focus();
+                return false;
+            }
+
+            // pass1
+            if ( $('#pass1').val().trim() == '' ) {
+                alert('패스워드를 입력하세요');
+                $('#pass1').focus();
+                return false;
+            }
+
+            // pass2 
+            if ( $('#pass2').val().trim() == '' ){
+                alert('비밀번호 확인을 입력하세요');
+                $('#pass2').focus();
+                return false;
+            }
+
+            // confirm password same
+            if ( $('#pass1').val().trim() != $('#pass2').val().trim() ){
+                alert('비밀번호가 일치 하지 않습니다');
+                $('#pass2').select().focus();
+                return false;
+            }
+
+            return true
+        }
+    </script>
+
+
 <table>
-    <form name="form" action="/join" method="post">
+    <form name="form" action="{{ url_for('member.member_join')}}" method="post" onsubmit="return checkForm();">
         <thead>
             <caption>회원가입</caption>
         </thead>
         <tbody>
             <tr>
                 <td>이름</td>
-                <td><input type="text" name="name"></td>
+                <td><input type="text" name="name" id="name"></td>
             </tr>
             <tr>
                 <td>이메일</td>
-                <td><input type="text" name="email"></td>
+                <td><input type="text" name="email" id="email"></td>
             </tr>
             <tr>
                 <td>비밀번호</td>
-                <td><input type="password" name="pass"></td>
+                <td><input type="password" name="pass" id="pass1"></td>
             </tr>
             <tr>
                 <td>비밀번호 확인</td>
-                <td><input type="password" name="pass2"></td>
+                <td><input type="password" name="pass2" id="pass2"></td>
             </tr>
             <tr>
                 <td colspan="2"><input type="submit" value="가입하기"></td>

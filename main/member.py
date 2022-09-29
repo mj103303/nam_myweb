@@ -96,4 +96,6 @@ def member_logout():
     except:
         pass
     return redirect(url_for("board.lists", title='게시판리스트'))
+
+
  

@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if title %} {{ title }} {% else %} 조조삼국통일 {% endif %}</title>
 
-</head>
+    <!-- jquery import -->
+    <script src="https://code.jquery.com/jquery-3.6.1.slim.js"></script>
 
-<body>
     <!-- flash message -->
     {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -19,6 +19,19 @@
     </script>
     {% endif%}
     {% endwith%}
+
+    <script>
+        // email 검증 함수 true, false 리턴
+        function validateEmail(email){
+            var pattern = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.]([a-zA-Z]){2,3}$/i;
+            return pattern.test(email);
+        }
+    </script>
+
+</head>
+
+<body style="background-color:#a3cca2">
+
 
     <!-- menu -->
     {% include "menu.html" %}
