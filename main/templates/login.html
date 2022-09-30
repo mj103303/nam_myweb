@@ -3,13 +3,6 @@
 {% block content %}
 
 <script>
-
-
-    function validateEmail(email){
-        var pattern = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.]([a-zA-Z]){2,3}$/i;
-        return pattern.test(email);
-    }
-
     function checkForm(){   // true, false를 주는 함수
         
         if( $('#email').val().trim() == "" ){
@@ -32,30 +25,21 @@
 
         return true;
     }
-
 </script>
 
-<table>
-    <form action="{{ url_for('member.member_login') }}" name="form" method="post" onsubmit="return checkForm()">
-        {% if next_url %}
-        <input type="hidden" value="{{ next_url }}" name="next_url">
-        {% endif %}
-        <thead>
-            <caption>회원 로그인</caption>
-        </thead>
-        <tbody>
-            <tr>
-                <td>이메일</td>
-                <td><input class="input-class" type="text" name="email" id="email"></td>
-            </tr>
-            <tr>
-                <td>비밀번호</td>
-                <td><input class="input-class" type="password" name="pass" id="pass"></td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="submit" value="로그인"></td>
-            </tr>
-        </tbody>
-    </form>
-</table>
+<form action="{{ url_for('member.member_login') }}" name="form" method="post" onsubmit="return checkForm()">
+    {% if next_url %}
+    <input type="hidden" value="{{ next_url }}" name="next_url">
+    {% endif %}
+    <div class="form-group">
+        <label for="email">이메일</label>
+        <input class="form-control" type="text" name="email" id="email">
+    </div>
+    <div class="form-group">
+        <label for="pass">비밀번호</label>
+        <input class="form-control" type="password" name="pass" id="pass">
+    </div>
+    <div class="text-center"><input type="submit" value="로그인" class="btn btn-outline-primary"></div>
+</form>
+
 {% endblock %}

@@ -1,45 +1,69 @@
-
 {% extends "main.html" %}
 {% block content%}
 <script>
-    function checkForm(){   // true, false를 주는 함수
-        
-        if( $('#title').val().trim() == "" ){
+    // summernote 
+    $(document).ready(function(){
+        $('#summernote').summernote({
+            height : 300,
+            minHeight : null,
+            maxHeight : null,
+            lang: "ko-KR",
+            popover : {
+                image: [],
+                link: [],
+                air: []
+            },
+            callbacks : {
+                onImageUpload : function(image){
+                    for(var i =0; i < image.length; i++){
+                        uploadImage(image[i]);
+                    }
+                }
+            }
+        });
+    });
+
+    function uploadImage(image){
+        console.log(image);
+    }
+</script>
+
+<script>
+    function checkForm() { // true, false를 주는 함수
+        if ($('#title').val().trim() == "") {
             alert("제목을 입력하세요");
             $("#title").focus();
             return false;
         }
-
-
-        if( $("#contents").val().trim() == "") {
+        if ($("#summernote").val().trim() == "") {
             alert("내용을 입력하세요");
-            $('#contents').focus();
+            $('#summernote').focus();
             return false;
         }
-
         return true;
     }
 </script>
 
 
-<table>
-    <form action="{{ url_for('board.board_write')}}" method="post" onsubmit="return checkForm()">
-    <tr>
-        <td>작성자</td>
-        <td><input type="text" name="name" value="{{session.name}}" readonly></td>
-    </tr>
-    <tr>
-        <td>제목</td>
-        <td><input type="text" name="title" id="title"></td>
-    </tr>
-    <tr>
-        <td>내용</td>
-        <td><textarea name="contents" id="contents"></textarea></td>
-    </tr>
-    <tr>
-        <td colspan="2"><input type="submit"></td>
-    </tr>
-    </form> 
-</table>
+<form action="{{ url_for('board.board_write')}}" method="post" onsubmit="return checkForm()">
+    <div class="form-group">
+        <label for="name">작성자</label>
+        <input class="form-control" type="text" name="name" value="{{session.name}}" readonly>
+    </div>
+    <div class="form-group">
+        <label for="title">제목</label>
+        <input type="text" name="title" id="title" class="form-control" placeholder="제목을 입력하세요">
+    </div>
+
+    <!-- summer note 적용 -->
+    <div class="form-group">
+        <label for="contents">내용</label>
+        <textarea rows="8" class="form-control" name="contents" id="summernote" placeholder="내용을 입력하세요"></textarea>
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary" >작성하기</button>
+    </div>
+</form>
 
 {% endblock %}

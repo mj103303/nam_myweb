@@ -2,19 +2,27 @@
 {% extends "main.html" %}
 
 {% block content %}
-{{result.title}}<br>
-{{result.name}}<br>
-{{result.pubdate|formatdatetime}}<br>
-{{result.view}}<br>
-{{result.contents}}<br>
-{{result.writer_id}}
 
-<br>
-<a href="{{ url_for('board.lists', page=page, search=search, keyword=keyword)}}">리스트로</a>
+<table class="table table-bordered mt-3">
+    <tbody>
+        <tr>
+            <td colspan="2">{{result.title}}</td>
+        </tr>
+        <tr>
+            <td>{{result.name}}</td>
+            <td class="text-right">{{result.pubdate|formatdatetime}}</td>
+        </tr>
+        <tr>
+            <td colspan="2"><div style="min-height:200px">{% autoescape false%}{{result.contents}}{% endautoescape %}</div></td>
+        </tr>
+    </tbody>
+</table>
+
+<a class="btn btn-primary" href="{{ url_for('board.lists', page=page, search=search, keyword=keyword)}}">리스트로</a>
 
 {% if session.id == result.writer_id %}
-    <a href="{{ url_for('board.board_delete', idx=result.id) }}">글삭제</a>
-    <a href="{{ url_for('board.board_edit', idx=result.id) }}">글수정</a>
+    <a class="btn btn-danger float-right ml-1" href="{{ url_for('board.board_delete', idx=result.id) }}">글삭제</a>
+    <a class="btn btn-warning float-right" href="{{ url_for('board.board_edit', idx=result.id) }}">글수정</a>
 {% endif%}
 
 {% endblock %}
