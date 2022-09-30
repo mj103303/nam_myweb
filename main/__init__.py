@@ -22,7 +22,7 @@ app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
 if not os.path.exists(app.config['BOARD_IMAGE_PATH']):
     os.mkdir(app.config['BOARD_IMAGE_PATH'])
 
-from .common import login_required
+from .common import login_required, allowed_file, rand_generate
 from .filter import format_datetime
 from . import board
 from . import member

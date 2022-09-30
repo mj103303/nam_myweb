@@ -35,18 +35,13 @@
             type: "post",
             success : function(url){
                 var image = $('<img>').attr('src', url).css('max-width', '900px');
-                console.log('image: ', image);
-                console.log('image[0]:', image[0]);
                 $('#summernote').summernote('insertNode', image[0]);
-                // 왜 image[0] 이지: 찍
+                // 왜 image[0] 이지: image를 담고있는 자료형이 리스트다????
             },
             error : function(){
                 console.log(data);
                 alert(data);
-
             }
-
-
         })
     }
 </script>

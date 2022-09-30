@@ -1,19 +1,11 @@
 from string import ascii_lowercase
 from main import *
 from flask import Blueprint
-from string import digits, ascii_uppercase, ascii_lowercase
 import random
+from flask import send_from_directory
 
 bp = Blueprint("board", __name__, url_prefix="/board")
 
-
-def allowed_file(filename):
-    '''허용된 파일 확장자인지확인'''
-    return '.' in filename and filename.rsplit('.', 1)[-1] in ALLOWED_EXTENSIONS
-
-def rand_generate(length=8):
-    char = digits + ascii_uppercase + ascii_lowercase
-    return ''.join.random.sample(char, length) 
 
 # image를 저장만함 ,url 리턴 안함
 @bp.route("/upload_image", methods=("POST",))
@@ -24,6 +16,12 @@ def upload_image():
         savefilepath = os.path.join(app.config['BOARD_IMAGE_PATH'], filename)
         file.save(savefilepath)
         return url_for('board.board_images', filename=filename)
+    
+# image file 리턴 - 아 요건 게시판 이미지 업로드하고 상관없네 >> 아미지 다운로드 할때 사용
+@bp.route("/images/<filename>")
+def board_images(filename):
+    return send_from_directory(app.config['BOARD_IMAGE_PATH'], filename)
+
     
 
 @bp.route("/list")
