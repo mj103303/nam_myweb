@@ -13,16 +13,24 @@ mongo = PyMongo(app)    # mongo 가 myweb을 가르킴
 app.config['SECRET_KEY'] = "gahoo11sdf1"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
-BOARD_IMAGE_PATH = "C:\\coding\\01study\\inflean\\images"
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
+# image upload 설정
+BOARD_IMAGE_PATH = "C:\\coding\\01study\\inflean\\images"
 app.config['BOARD_IMAGE_PATH'] = BOARD_IMAGE_PATH
+if not os.path.exists(app.config['BOARD_IMAGE_PATH']):
+    os.mkdir(app.config['BOARD_IMAGE_PATH'])  
+    
 app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
 
-if not os.path.exists(app.config['BOARD_IMAGE_PATH']):
-    os.mkdir(app.config['BOARD_IMAGE_PATH'])
+# file upload 설정
+BOARD_ATTACH_FILE_PATH = "C:\\coding\\01study\\inflean\\upload"
+app.config['BOARD_ATTACH_FILE_PATH'] = BOARD_ATTACH_FILE_PATH
+if not os.path.exists(app.config['BOARD_ATTACH_FILE_PATH']):
+    os.mkdir(app.config['BOARD_ATTACH_FILE_PATH'])
 
-from .common import login_required, allowed_file, rand_generate
+
+from .common import login_required, allowed_file, rand_generate, check_filename
 from .filter import format_datetime
 from . import board
 from . import member

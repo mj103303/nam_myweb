@@ -63,7 +63,7 @@
 </script>
 
 
-<form action="{{ url_for('board.board_write')}}" method="post" onsubmit="return checkForm()">
+<form action="{{ url_for('board.board_write')}}" method="post" onsubmit="return checkForm()" enctype="multipart/form-data">
     <div class="form-group">
         <label for="name">작성자</label>
         <input class="form-control" type="text" name="name" value="{{session.name}}" readonly>
@@ -77,6 +77,11 @@
     <div class="form-group">
         <label for="contents">내용</label>
         <textarea rows="8" class="form-control" name="contents" id="summernote" placeholder="내용을 입력하세요"></textarea>
+    </div>
+    <!-- file upload -->
+    <div class="custom-file">
+        <input type="file" name="attachfile" id="cstomFile" class="custom-file-input">
+        <label for="customFile" class="custom-file-label">파일선택이렸다</label>
     </div>
 
     <div class="text-center">

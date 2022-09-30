@@ -6,6 +6,12 @@ from flask import send_from_directory
 
 bp = Blueprint("board", __name__, url_prefix="/board")
 
+def board_delete_attach_file(filename):
+    abs_path = os.path.join(app.config['BOARD_ATTACH_FILE_PATH'], filename)
+    if os.path.exists(abs_path):    # 파일이 존재해야지 삭제하지
+        os.remove(abs_path)
+        return True
+    return False
 
 # image를 저장만함 ,url 리턴 안함
 @bp.route("/upload_image", methods=("POST",))
@@ -22,6 +28,9 @@ def upload_image():
 def board_images(filename):
     return send_from_directory(app.config['BOARD_IMAGE_PATH'], filename)
 
+@bp.route("/files/<filename>")
+def board_files(filename):
+    return send_from_directory(app.config['BOARD_ATTACH_FILE_PATH'], filename, as_attachment=True)
     
 
 @bp.route("/list")
@@ -119,7 +128,10 @@ def board_view(idx):
                 'contents': data.get('contents'),
                 'pubdate': data.get('pubdate'),
                 'view': data.get('view'),
-                "writer_id": session.get("id", "")
+                "writer_id": session.get("id", ""),
+                # 파일업로드 추가내용
+                "attachfile": data.get('attachfile', '')
+                # 파일업로드 추가내용 end
             }
             return render_template('view.html', result=result, data=data, page=page, search=search, keyword=keyword, title="상세보기")
 
@@ -130,8 +142,17 @@ def board_view(idx):
 @bp.route("/write", methods=["GET", "POST"])
 @login_required
 def board_write():
-
     if request.method == "POST":
+        # 추가코드1
+        filename = None
+        if 'attachfile' in request.files:   # attachfile 있는지 확인 (html의 name 값)
+            # request.files 하면 
+            file = request.files['attachfile']
+            if file and allowed_file(file.filename):    # 허용된 확장자인지
+                filename = check_filename(file.filename)    # secure_filename
+                file.save(os.path.join(app.config['BOARD_ATTACH_FILE_PATH'], filename))
+        # 추가코드1 end 
+        
         name = request.form.get("name")
         title = request.form.get("title")
         contents = request.form.get("contents")
@@ -147,6 +168,12 @@ def board_write():
             "writer_id": session.get("id"),
             "view": 0
         }
+        print(f'filename확인: {filename}')  # 연습.txt.txt
+        # 추가코드2
+        if filename is not None:
+            post['attachfile'] = filename   # mongodb에 파일명을 저장하네 good
+        # 추가코드2 end
+        
         x = board.insert_one(post)
 
         # x.inserted_id >> ObjectId 자료형
@@ -189,17 +216,50 @@ def board_edit(idx):
     else:
         title = request.form.get('title', type=str)
         contents = request.form.get('contents', type=str)
+        
+        # 첨부파일 로직 
+        deleteoldfile = request.form.get('deleteoldfile', '')   # 기본값이 '' 값인게 뭔가 포인트
+        # 첨부파일 로직 end
+        
+        
         board = mongo.db.board
         data = board.find_one({"_id": ObjectId(idx)})
         if data is None:
             flash('해당 게시물이 존재 하지 않습니다')
             return redirect(url_for('board.lists'))
         else:
-            if session.get('id') == data.get('writer_id'):
+            if session.get('id') == data.get('writer_id'):  # 수정 삭제 권한 확인
+                # 첨부파일 로직 2 
+                filename = None
+                if 'attachfile' in request.files:   # 첨부파일이 있으면
+                    file = request.files['attachfile']
+                    if file and allowed_file(file.filename):
+                        filename = check_filename(file.filename)
+                        file.save(os.path.join(app.config['BOARD_ATTACH_FILE_PATH'], filename))
+
+                        # 근데 db에 이미 저장된 파일이 있으면 삭제 해야지
+                        if data.get("attachfile"):     # 파일이 있으면 == 예전파일
+                            # mongodb를 지우는게 아니라, 서버에 저장된 파일을 지워야 하는구나
+                            board_delete_attach_file(data.get("attachfile"))
+                                # file삭제 함수
+                else:   # 첨부파일 없을때
+                    if deleteoldfile == "on":   #체크박스 체크한경우 == 파일삭제하라는경우
+                        filename = None     # 파일삭제 관련 진행하니깐 로직들어가야함
+                        if data.get('attachfile'):
+                            board_delete_attach_file(data.get('attachfile'))
+                    else:   # 삭제 하지말라고하면
+                        filename = data.get("attachfile")                        
+                # 첨부파일 로직 2 end
+                    
+                
                 board.update_one({"_id": ObjectId(idx)}, {
                     "$set": {
                         "title": title,
-                        "contents": contents
+                        "contents": contents,
+                        # 첨부파일 로직 3 
+                        'attachfile': filename                        
+                        # 굳이 없데이트 해줘야 하나? >> 응 수정하니까 필요한거 다 수정해줘야해, 
+                        # 첨부파일 로직 end 
                     }
                 })
                 flash('수정되었습니다.')

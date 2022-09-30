@@ -1,18 +1,62 @@
-
 {% extends "main.html" %}
 
 {% block content %}
 <script>
-    function checkForm(){   // true, false를 주는 함수
-        
-        if( $('#title').val().trim() == "" ){
+    // summernote 
+    $(document).ready(function () {
+        $('#summernote').summernote({
+            height: 300,
+            minHeight: null,
+            maxHeight: null,
+            lang: "ko-KR",
+            popover: {
+                image: [],
+                link: [],
+                air: []
+            },
+            callbacks: {
+                onImageUpload: function (image) {
+                    for (var i = 0; i < image.length; i++) {
+                        uploadImage(image[i]);
+                    }
+                }
+            }
+        });
+    });
+
+    function uploadImage(image) {
+        var data = new FormData();
+        data.append('image', image);
+        $.ajax({ // page 이동없이 내부적으로 통신
+            url: "{{ url_for('board.upload_image')}}",
+            cache: false, // cache가 남아있는걸 방지 > cache를 삭제해주는듯
+            contentType: false, // 파일 전송은 multipart/form-data > 파일전송 > false해야지 multipart
+            processData: false, // true로 주면 a=10&b=20 이런식 > 파일전송이니까 안됨
+            data: data, // image를 넘겨줘야지
+            type: "post",
+            success: function (url) {
+                var image = $('<img>').attr('src', url).css('max-width', '900px');
+                $('#summernote').summernote('insertNode', image[0]);
+                // 왜 image[0] 이지: image를 담고있는 자료형이 리스트다????
+            },
+            error: function () {
+                console.log(data);
+                alert(data);
+            }
+        })
+    }
+</script>
+<script>
+    function checkForm() { // true, false를 주는 함수
+
+        if ($('#title').val().trim() == "") {
             alert("제목을 입력하세요");
             $("#title").focus();
             return false;
         }
 
 
-        if( $("#contents").val().trim() == "") {
+        if ($("#contents").val().trim() == "") {
             alert("내용을 입력하세요");
             $('#contents').focus();
             return false;
@@ -21,7 +65,7 @@
         return true;
     }
 </script>
-<form method="post" action="{{ url_for('board.board_edit', idx=data._id)}}" onsubmit="return checkForm();">
+<form method="post" action="{{ url_for('board.board_edit', idx=data._id)}}" onsubmit="return checkForm();" enctype="multipart/form-data">
     <div class="form-group">
         <label for="name">작성자</label>
         <input class="form-control" type="text" name="name" value="{{session.name}}" readonly>
@@ -30,10 +74,23 @@
         <label for="title">제목</label>
         <input class="form-control" type="text" name="title" value="{{ data.title }}" id="title">
     </div>
+    {% if data.attachfile %}
+    <div class="form-check text-right">
+        <input type="checkboX" class="form-check-input" name="deleteoldfile" id="deleteoldfile">
+        <label for="deleteoldfile" class="form-check-label">첨부파일 삭제 ({{ data.attachfile }})</label>
+    </div>
+    {% endif %}
     <div class="form-group">
         <label for="contents">내용</label>
-        <textarea rows="8" class="form-control" name="contents" id="contents">{{ data.contents }}</textarea>
+        <textarea rows="8" class="form-control" name="contents" id="summernote">{{ data.contents }}</textarea>
     </div>
+
+    <!-- file upload -->
+    <div class="custom-file">
+        <input type="file" name="attachfile" id="cstomFile" class="custom-file-input">
+        <label for="customFile" class="custom-file-label">파일선택이렸다</label>
+    </div>
+
     <div class="text-conter"><input type="submit" value="수정하기" class="btn btn-outline-primary"></div>
 </form>
 
