@@ -1,8 +1,30 @@
+from string import ascii_lowercase
 from main import *
 from flask import Blueprint
+from string import digits, ascii_uppercase, ascii_lowercase
+import random
 
 bp = Blueprint("board", __name__, url_prefix="/board")
 
+
+def allowed_file(filename):
+    '''허용된 파일 확장자인지확인'''
+    return '.' in filename and filename.rsplit('.', 1)[-1] in ALLOWED_EXTENSIONS
+
+def rand_generate(length=8):
+    char = digits + ascii_uppercase + ascii_lowercase
+    return ''.join.random.sample(char, length) 
+
+# image를 저장만함 ,url 리턴 안함
+@bp.route("/upload_image", methods=("POST",))
+def upload_image():
+    file = request.files['image']
+    if file and allowed_file(file.filename):
+        filename ='{}.jpg'.format(rand_generate())  # 8자 랜덤한 문자
+        savefilepath = os.path.join(app.config['BOARD_IMAGE_PATH'], filename)
+        file.save(savefilepath)
+        return url_for('board.board_images', filename=filename)
+    
 
 @bp.route("/list")
 def lists():

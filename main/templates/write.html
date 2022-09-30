@@ -24,7 +24,30 @@
     });
 
     function uploadImage(image){
-        console.log(image);
+        var data = new FormData();
+        data.append('image', image);
+        $.ajax({    // page 이동없이 내부적으로 통신
+            url: "{{ url_for('board.upload_image')}}",
+            cache: false,   // cache가 남아있는걸 방지 > cache를 삭제해주는듯
+            contentType : false,    // 파일 전송은 multipart/form-data > 파일전송 > false해야지 multipart
+            processData : false, // true로 주면 a=10&b=20 이런식 > 파일전송이니까 안됨
+            data : data,    // image를 넘겨줘야지
+            type: "post",
+            success : function(url){
+                var image = $('<img>').attr('src', url).css('max-width', '900px');
+                console.log('image: ', image);
+                console.log('image[0]:', image[0]);
+                $('#summernote').summernote('insertNode', image[0]);
+                // 왜 image[0] 이지: 찍
+            },
+            error : function(){
+                console.log(data);
+                alert(data);
+
+            }
+
+
+        })
     }
 </script>
 

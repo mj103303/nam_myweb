@@ -5,14 +5,22 @@ from datetime import datetime
 import time
 import math
 from datetime import timedelta
-
-
+import os
 
 app = Flask(__name__)
 app.config["MONGO_URI"] =  "mongodb://localhost:27017/myweb"
 mongo = PyMongo(app)    # mongo 가 myweb을 가르킴
 app.config['SECRET_KEY'] = "gahoo11sdf1"
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+
+BOARD_IMAGE_PATH = "C:\\coding\\01study\\inflean\\images"
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+
+app.config['BOARD_IMAGE_PATH'] = BOARD_IMAGE_PATH
+app.config['MAX_CONTENT_LENGTH'] = 15 * 1024 * 1024
+
+if not os.path.exists(app.config['BOARD_IMAGE_PATH']):
+    os.mkdir(app.config['BOARD_IMAGE_PATH'])
 
 from .common import login_required
 from .filter import format_datetime
