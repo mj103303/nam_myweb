@@ -26,6 +26,17 @@
     function uploadImage(image){
         var data = new FormData();
         data.append('image', image);
+        var csrf_token = "{{ csrf_token() }}";
+
+        $.ajaxSetup({
+            beforeSend: function(x, s) {
+                if(!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(s.type)) {
+                    // s.type -> s는 ajax의 세팅(setting)
+                    x.setRequestHeader("X-CSRFToken", csrf_token)
+                }
+            }
+        })
+
         $.ajax({    // page 이동없이 내부적으로 통신
             url: "{{ url_for('board.upload_image')}}",
             cache: false,   // cache가 남아있는걸 방지 > cache를 삭제해주는듯
@@ -64,6 +75,7 @@
 
 
 <form action="{{ url_for('board.board_write')}}" method="post" onsubmit="return checkForm()" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="form-group">
         <label for="name">작성자</label>
         <input class="form-control" type="text" name="name" value="{{session.name}}" readonly>
