@@ -36,6 +36,8 @@ from .common import login_required, allowed_file, rand_generate, check_filename,
 from .filter import format_datetime
 from . import board
 from . import member
+from . import main
 
 app.register_blueprint(board.bp)
 app.register_blueprint(member.bp)
+app.register_blueprint(main.bp)

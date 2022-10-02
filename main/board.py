@@ -1,3 +1,4 @@
+from msvcrt import kbhit
 from string import ascii_lowercase
 from main import *
 from flask import Blueprint
@@ -99,7 +100,7 @@ def lists():
         #? write.html 도 바꿔
         return render_template("list_not_data.html", title='오류페이지')
 
-
+# 글상세
 @bp.route("/view/<idx>")
 @login_required
 def board_view(idx):
@@ -133,7 +134,9 @@ def board_view(idx):
                 "attachfile": data.get('attachfile', '')
                 # 파일업로드 추가내용 end
             }
-            return render_template('view.html', result=result, data=data, page=page, search=search, keyword=keyword, title="상세보기")
+            comment = mongo.db.comment
+            comments = comment.find({"root_idx": str(idx)})
+            return render_template('view.html', comments=comments, result=result, data=data, page=page, search=search, keyword=keyword, title="상세보기")
 
     else:
         return abort(404)
@@ -267,3 +270,28 @@ def board_edit(idx):
             else:
                 flash('수정권한이 없습니다')
                 return redirect(url_for("board.lists"))
+
+
+# 코멘트 작성
+@bp.route("/comment_write", methods=("POST",))
+@login_required
+def comment_write():
+    name = session.get('name')
+    writer_id = session.get('id')
+    comment = request.form.get('comment')
+    root_idx = request.form.get("root_idx")     # root_idx : 글 id야
+    current_utc_time = round(datetime.utcnow().timestamp() * 1000)
+    
+    c_comment = mongo.db.comment
+    
+    post = {
+        "root_idx": str(root_idx),  # 글 id
+        "writer_id" : writer_id,
+        "name" : name,
+        "comment": comment,
+        "pubdate": current_utc_time
+    }    
+    
+    c_comment.insert_one(post)
+        
+    return redirect(url_for('board.board_view', idx=root_idx))
