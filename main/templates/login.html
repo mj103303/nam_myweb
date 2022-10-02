@@ -28,6 +28,7 @@
 </script>
 
 <form action="{{ url_for('member.member_login') }}" name="form" method="post" onsubmit="return checkForm()">
+    <input type="hidden" value="{{ csrf_token() }}" name="csrf_token">
     {% if next_url %}
     <input type="hidden" value="{{ next_url }}" name="next_url">
     {% endif %}

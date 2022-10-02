@@ -31,14 +31,14 @@ def member_join():
         post = {
             "name": name,
             "email": email,
-            "pass": pass1,
+            "pass": hash_password(pass1),
             "joindate": current_utc_time,
             "logintime": "",
             "logincount": 0
         }
         members.insert_one(post)
         
-        return ""
+        return redirect(url_for("board.lists"))
     else:
         return render_template("join.html", title='회원가입')
 
@@ -59,8 +59,8 @@ def member_login():
             flash("회원 정보가 없습니다")
             return redirect(url_for("member.member_login"))
         else:   
-            # 로그인하고, 세션 만들고
-            if password == data.get("pass"):
+            # 로그인 한다는건 세션을 만든다는거네
+            if check_password(data.get("pass"), password):
                 session["email"] = email
                 session['name'] = data.get('name')
                 session['id'] = str(data.get('_id'))
