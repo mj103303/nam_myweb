@@ -14,6 +14,16 @@ def board_delete_attach_file(filename):
         return True
     return False
 
+
+# 에이잭스 테스트
+@bp.route("/ajax")
+def ajaxtest():
+    return render_template("test.html")
+
+@bp.route("/test")
+def test():
+    return "AJAX CALL 111"
+
 # image를 저장만함 ,url 리턴 안함
 @bp.route("/upload_image", methods=("POST",))
 def upload_image():
@@ -134,10 +144,7 @@ def board_view(idx):
                 "attachfile": data.get('attachfile', '')
                 # 파일업로드 추가내용 end
             }
-            comment = mongo.db.comment
-            comments = comment.find({"root_idx": str(idx)})
-            return render_template('view.html', comments=comments, result=result, data=data, page=page, search=search, keyword=keyword, title="상세보기")
-
+            return render_template('view.html', result=result, data=data, page=page, search=search, keyword=keyword, title="상세보기")
     else:
         return abort(404)
 
@@ -273,7 +280,7 @@ def board_edit(idx):
 
 
 # 코멘트 작성
-@bp.route("/comment_write", methods=("POST",))
+@bp.route("/comment_write", methods=["POST"])
 @login_required
 def comment_write():
     name = session.get('name')
@@ -295,3 +302,47 @@ def comment_write():
     c_comment.insert_one(post)
         
     return redirect(url_for('board.board_view', idx=root_idx))
+
+# 코멘트리스트
+@bp.route("/comment_list/<root_idx>", methods=["GET"])
+def comment_list(root_idx):
+    comment = mongo.db.comment
+    comments = comment.find({"root_idx": root_idx}).sort("pubdate", -1)
+    
+    comment_list = []
+    for c in comments:
+        # 수정권한있는지
+        owner = True if session.get('id') == c.get('writer_id') else False
+
+        comment_list.append({
+            'id': str(c.get('_id')),    # comment id
+            'root_idx': c.get('root_idx'),  # 글id
+            'name': c.get('name'),
+            'writer_id': c.get('writer_id'),
+            'comment': c.get('comment'),
+            'pubdate': format_datetime(c.get('pubdate')),
+            'owner' : owner
+        })
+        
+    return jsonify(error='success', lists=comment_list)
+
+
+# 코멘트삭제
+@bp.route("/comment_delete", methods=['POST'])
+@login_required
+def comment_delete():
+    if request.method == "POST":
+        idx = request.form.get("id")
+        
+        comment = mongo.db.comment
+        data = comment.find_one({"_id": ObjectId(idx)})
+        # 권한 확인 다시해야된데
+        if session.get('id') == data.get("writer_id"):
+            comment.delete_one({"_id": ObjectId(idx)})
+            return jsonify(error="success")
+        else:
+            return jsonify(error="error")
+    else:
+        abort(401)
+            
+            
